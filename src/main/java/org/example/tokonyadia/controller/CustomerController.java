@@ -33,4 +33,9 @@ public class CustomerController {
     public Customer putCustomer(@RequestBody Customer customer) {
         return customerService.updateCustomer(customer);
     }
+
+    @DeleteMapping
+    public Customer deleteCustomer (@RequestBody int id) {
+        return customerService.deleteCustomer(id);
+    }
 }
