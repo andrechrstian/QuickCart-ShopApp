@@ -1,54 +1,52 @@
 package org.example.tokonyadia.service.impl;
 
+import lombok.AllArgsConstructor;
 import org.example.tokonyadia.entity.Product;
+import org.example.tokonyadia.repository.ProductRepository;
 import org.example.tokonyadia.service.ProductService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    List<Product> dbProduct = new ArrayList<Product>();
+
+    private ProductRepository productRepository;
 
     @Override
     public Product saveProduct(Product product) {
-
-        //save product on list memory
-        dbProduct.add(product);
-        return product;
+        return productRepository.saveAndFlush(product);
     }
 
     @Override
-    public List<Product> getAllProduct() {
-        return dbProduct;
+    public List<Product> getAllProduct(String name) {
+       if (name != null) {
+           return productRepository.findAllByNameLike("%" + name + "%");
+       }
+        return productRepository.findAll();
     }
 
+    @Override
+    public Product getById(String id) {
+        // optional = list/satuan
+        Optional<Product> product = productRepository.findById(id);
+        return product.orElse(null);
+    }
 
     @Override
-    public Product deleteProduct(int id) {
-        for (int i = 0; i < dbProduct.size(); i++) {
-            Product product = dbProduct.get(i);
-            if (product.getId() == id) {
-                dbProduct.remove(i);
-                return product;
-            }
+    public void deleteProduct(String id) {
+        productRepository.deleteById(id);
+    }
+
+    @Override
+    public Product updateProduct(Product update) {
+        //getById(updateProduct.getId());
+        if (!productRepository.existsById((update.getId()))) {
+            throw new IllegalArgumentException("Product Id " + update.getId() + " does not exixst");
         }
-        return null;
-    }
-
-    @Override
-    public Product updateProduct(Product updateProduct) {
-        for (int i = 0; i < dbProduct.size(); i++) {
-            Product product = dbProduct.get(i);
-            if (product.getId() == updateProduct.getId()) {
-                dbProduct.set(i,updateProduct);
-                return updateProduct;
-            }
-        }
-        return null;
+        return productRepository.saveAndFlush(update);
     }
 
 }

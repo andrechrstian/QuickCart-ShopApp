@@ -1,22 +1,21 @@
 package org.example.tokonyadia.controller;
 
+import lombok.AllArgsConstructor;
+import org.example.tokonyadia.constant.APIUrl;
 import org.example.tokonyadia.entity.Product;
 import org.example.tokonyadia.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/product")
+@AllArgsConstructor
+@RequestMapping(path = APIUrl.PRODUCT_API)
 public class ProductController {
 
-    ProductService productService;
-    @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+    private ProductService productService;
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -25,17 +24,28 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getProduct() {
-        return  productService.getAllProduct();
+    public List<Product> getProduct(@RequestParam(name = "name", required = false) String name) {
+        return productService.getAllProduct(name);
     }
 
-    @DeleteMapping
-    public Product deleteProduct(@RequestBody int id) {
-        return productService.deleteProduct(id);
+    @GetMapping("/{id}")
+    public Product getProductById(@PathVariable String id) {
+        return productService.getById(id);
     }
 
-    @PutMapping
-    public Product updateProduct(@RequestBody Product product) {
-        return productService.updateProduct(product);
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable String id) {
+        productService.deleteProduct(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable String id, @RequestBody Product product) {
+        try {
+            product.setId(id);
+            Product updateProduct = productService.updateProduct(product);
+            return ResponseEntity.ok(updateProduct);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

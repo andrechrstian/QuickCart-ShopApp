@@ -1,49 +1,65 @@
 package org.example.tokonyadia.service.impl;
 
+import lombok.AllArgsConstructor;
+import org.example.tokonyadia.dto.request.CustomerRequest;
+import org.example.tokonyadia.dto.response.CustomerResponse;
 import org.example.tokonyadia.entity.Customer;
-import org.example.tokonyadia.entity.Product;
+import org.example.tokonyadia.repository.CustomerRepository;
 import org.example.tokonyadia.service.CustomerService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
-    List<Customer> customers = new ArrayList<Customer>();
+
+    private CustomerRepository customerRepository;
 
     @Override
-    public Customer saveCustomer(Customer customer) {
-        customers.add(customer);
-        return customer;
+    public CustomerResponse saveCustomer(CustomerRequest request) {
+        Customer customer = new Customer();
+        customer.setName(request.getName());
+        customer.setPhone(request.getPhone());
+        customer.setAddress(request.getAddress());
+        customer.setBirthDate(request.getBirthDate());
+
+        customer = customerRepository.saveAndFlush(customer);
+
+        CustomerResponse response = new CustomerResponse();
+        response.setName(customer.getName());
+        response.setPhoneNumber((customer.getPhone()));
+        response.setAddress(customer.getAddress());
+
+        return response;
     }
+    
 
     @Override
-    public List<Customer> getAllCustomer() {
-        return customers;
-    }
-
-    @Override
-    public Customer deleteCustomer(int id) {
-        for (int i = 0; i < customers.size(); i++) {
-            Customer customer = customers.get(i);
-            if (customer.getId().equals(id)) {
-                customers.remove(i);
-                return customer;
-            }
+    public List<Customer> getAllCustomer(String name) {
+        if (name != null) {
+            return customerRepository.findAllByNameLike(name);
         }
-        return null;
+        return customerRepository.findAll();
     }
 
     @Override
-    public Customer updateCustomer(Customer updateCustomer) {
-        for (int i = 0; i < customers.size(); i++) {
-            Customer customer = customers.get(i);
-            if (customer.getId().equals(updateCustomer.getId())) {
-                customers.set(i,updateCustomer);
-                return updateCustomer;
-            }
+    public Customer getCustomerById(String id) {
+        Optional<Customer> customer = customerRepository.findById(id);
+        return customer.orElse(null);
+    }
+
+    @Override
+    public void deleteCustomer(String id) {
+        customerRepository.deleteById(id);
+    }
+
+    @Override
+    public Customer updateCustomer(Customer update) {
+        if (!customerRepository.existsById((update.getId()))) {
+            throw new IllegalArgumentException("Customer ID " + update.getId() + " does not exist");
         }
-        return null;
+        return customerRepository.saveAndFlush(update);
     }
 }
