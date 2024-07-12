@@ -1,12 +1,7 @@
 package org.example.tokonyadia.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.jpa.repository.Temporal;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.*;
 
 import java.util.Date;
 
@@ -15,6 +10,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "m_customer")
 public class Customer {
 
@@ -31,6 +27,10 @@ public class Customer {
     private Date birthDate;
     @Column(name = "status")
     private boolean deleted = Boolean.FALSE;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
 

@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository <Product, String> {
 
-    List<Product> findAllByNameLike(String name);
+    List<Product> findAllByNameLikeOrderByNameAsc(String name);
 
 }

@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootApplication
+//TODO : DTO = data transfer object
 
+@SpringBootApplication
 public class TokonyadiaApplication {
 
     public static void main(String[] args) {
