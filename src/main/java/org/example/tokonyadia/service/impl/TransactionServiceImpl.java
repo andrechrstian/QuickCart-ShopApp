@@ -11,11 +11,13 @@ import org.example.tokonyadia.entity.TransactionDetail;
 import org.example.tokonyadia.repository.TransactionDetailRepository;
 import org.example.tokonyadia.repository.TransactionRepository;
 import org.example.tokonyadia.service.CustomerService;
+import org.example.tokonyadia.service.MidtransService;
 import org.example.tokonyadia.service.ProductService;
 import org.example.tokonyadia.service.TransactionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
@@ -30,6 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionDetailRepository transactionDetailRepository;
     private final CustomerService customerService;
     private final ProductService productService;
+    private final MidtransService midtransService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -69,13 +72,29 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setTransactionDetails(transactionDetail);
         Transaction resultTransaction = transactionRepository.saveAndFlush(transaction);
 
-        //TODO : Create Transaction Response
-        return TransactionResponse.builder()
-                .id(resultTransaction.getId())
-                .customer(resultTransaction.getCustomer())
-                .transactionDetail(resultTransaction.getTransactionDetails())
-                .totalPayment(totalPayment.get())
-                .date(resultTransaction.getDate())
-                .build();
+
+        //TODO : Integrasi dengan Midtrans
+        try {
+            String paymentURL = midtransService.createPayment(resultTransaction, totalPayment.get());
+            return TransactionResponse.builder()
+                    .id(resultTransaction.getId())
+                    .customer(resultTransaction.getCustomer())
+                    .transactionDetail(resultTransaction.getTransactionDetails())
+                    .totalPayment(totalPayment.get())
+                    .date(resultTransaction.getDate())
+                    .redirectUrl(paymentURL)
+                    .build();
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed Transactions", e);
+        }
+
+//        //TODO : Create Transaction Response
+//        return TransactionResponse.builder()
+//                .id(resultTransaction.getId())
+//                .customer(resultTransaction.getCustomer())
+//                .transactionDetail(resultTransaction.getTransactionDetails())
+//                .totalPayment(totalPayment.get())
+//                .date(resultTransaction.getDate())
+//                .build();
     }
 }

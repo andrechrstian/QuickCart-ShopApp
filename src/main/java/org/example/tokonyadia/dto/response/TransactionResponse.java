@@ -21,4 +21,5 @@ public class TransactionResponse {
     private Date date;
     private List<TransactionDetail> transactionDetail;
     private Long totalPayment;
+    private String redirectUrl;
 }
