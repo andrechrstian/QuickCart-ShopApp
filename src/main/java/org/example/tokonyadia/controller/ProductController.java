@@ -52,7 +52,8 @@ public class ProductController {
     @GetMapping("/{id}") // /api/product/{UUID}
     public ResponseEntity<CommonResponse<ProductResponse>> getProductById(@PathVariable String id) {
         ProductResponse product = productService.getById(id);
-        CommonResponse<ProductResponse> response = generateProductResponse(HttpStatus.OK.value(), "", Optional.of(product));
+        CommonResponse<ProductResponse> response = generateProductResponse(HttpStatus.OK.value(),
+                "", Optional.of(product));
         return ResponseEntity.ok(response);
     }
 

@@ -47,26 +47,26 @@ public class TransactionServiceImpl implements TransactionService {
 
         List<TransactionDetail> transactionDetail = transactionRequest.getTransactionDetail().stream()
                 .map(detailRequest -> {
-            Product product = productService.getProductById(detailRequest.getProductId());
-            if (product.getStock() - detailRequest.getQty() < 0) {
-                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "out of stock");
-            }
-            product.setStock((product.getStock() - detailRequest.getQty()));
+                    Product product = productService.getProductById(detailRequest.getProductId());
+                    if (product.getStock() - detailRequest.getQty() < 0) {
+                        throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "out of stock");
+                    }
+                    product.setStock((product.getStock() - detailRequest.getQty()));
 
-            TransactionDetail trxDetail = TransactionDetail.builder()
-                    .product(product)
-                    .transaction(transaction)
-                    .qty(detailRequest.getQty())
-                    .productPrice(product.getPrice())
-                    .build();
+                    TransactionDetail trxDetail = TransactionDetail.builder()
+                            .product(product)
+                            .transaction(transaction)
+                            .qty(detailRequest.getQty())
+                            .productPrice(product.getPrice())
+                            .build();
 
-            //TODO : Total Payment
-            totalPayment.updateAndGet(v -> v + product.getPrice() * detailRequest.getQty());
+                    //TODO : Total Payment
+                    totalPayment.updateAndGet(v -> v + product.getPrice() * detailRequest.getQty());
 
-            //TODO : Insert Transaction Detail
-            transactionDetailRepository.save(trxDetail);
-            return trxDetail;
-        }).toList();
+                    //TODO : Insert Transaction Detail
+                    transactionDetailRepository.save(trxDetail);
+                    return trxDetail;
+                }).toList();
 
         //TODO : Insert Transaction
         transaction.setTransactionDetails(transactionDetail);
@@ -84,7 +84,7 @@ public class TransactionServiceImpl implements TransactionService {
                     .date(resultTransaction.getDate())
                     .redirectUrl(paymentURL)
                     .build();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed Transactions", e);
         }
 

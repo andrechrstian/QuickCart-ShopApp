@@ -2,11 +2,9 @@ package org.example.tokonyadia.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.tokonyadia.constant.APIUrl;
-import org.example.tokonyadia.dto.request.AuthRequest;
 import org.example.tokonyadia.dto.request.CustomerRequest;
 import org.example.tokonyadia.dto.response.CommonResponse;
 import org.example.tokonyadia.dto.response.LoginResponse;
-import org.example.tokonyadia.dto.response.ProductResponse;
 import org.example.tokonyadia.dto.response.RegisterResponse;
 import org.example.tokonyadia.service.AuthService;
 import org.springframework.http.HttpStatus;
@@ -26,7 +24,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register/customer")
-    public ResponseEntity<CommonResponse<RegisterResponse>> registerCustomer(@RequestBody AuthRequest <CustomerRequest> request) {
+    public ResponseEntity<CommonResponse<RegisterResponse>> registerCustomer(@RequestBody CustomerRequest.AuthRequest<CustomerRequest> request) {
 
         RegisterResponse response = authService.registerCustomer(request);
 
@@ -42,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/admin")
-    public ResponseEntity<CommonResponse<RegisterResponse>> registerAdmin(@RequestBody AuthRequest <CustomerRequest> request) {
+    public ResponseEntity<CommonResponse<RegisterResponse>> registerAdmin(@RequestBody CustomerRequest.AuthRequest<CustomerRequest> request) {
 
         RegisterResponse response = authService.registerAdmin(request);
 
@@ -58,7 +56,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<LoginResponse>> loginCustomer(@RequestBody AuthRequest<String> request) {
+    public ResponseEntity<CommonResponse<LoginResponse>> loginCustomer(@RequestBody CustomerRequest.AuthRequest<String> request) {
         LoginResponse response = authService.login(request);
         CommonResponse<LoginResponse> commonResponse = CommonResponse.<LoginResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())

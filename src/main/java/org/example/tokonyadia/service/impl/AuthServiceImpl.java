@@ -1,10 +1,7 @@
 package org.example.tokonyadia.service.impl;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.tokonyadia.dto.request.AuthRequest;
 import org.example.tokonyadia.dto.request.CustomerRequest;
 import org.example.tokonyadia.dto.response.LoginResponse;
 import org.example.tokonyadia.dto.response.RegisterResponse;
@@ -16,21 +13,17 @@ import org.example.tokonyadia.security.JwtUtil;
 import org.example.tokonyadia.service.AuthService;
 import org.example.tokonyadia.service.CustomerService;
 import org.example.tokonyadia.service.RoleService;
-import org.example.tokonyadia.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public RegisterResponse registerAdmin(AuthRequest<CustomerRequest> authRequest) {
+    public RegisterResponse registerAdmin(CustomerRequest.AuthRequest<CustomerRequest> authRequest) {
         Role role = roleService.getOrSave(Role.ERole.ADMIN);
         List<Role> roles = new ArrayList<>();
         roles.add(role);
@@ -72,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public RegisterResponse registerCustomer(AuthRequest<CustomerRequest> request) {
+    public RegisterResponse registerCustomer(CustomerRequest.AuthRequest<CustomerRequest> request) {
         Role role = roleService.getOrSave(Role.ERole.CUSTOMER);
         List<Role> roles = new ArrayList<>();
         roles.add(role);
@@ -100,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponse login(AuthRequest<String> request) {
+    public LoginResponse login(CustomerRequest.AuthRequest<String> request) {
 
         //Authentication Manager
         Authentication authentication = authenticationManager.authenticate(

@@ -89,7 +89,7 @@ public class CustomerController {
     }
 
     @PostMapping("/avatar")
-    public ResponseEntity<CommonResponse<AvatarResponse>> uploadAvatar(@RequestParam("avatar") MultipartFile avatar, HttpServletRequest request) {
+    public ResponseEntity<CommonResponse<   AvatarResponse>> uploadAvatar(@RequestParam("avatar") MultipartFile avatar, HttpServletRequest request) {
         String userId = (String) request.getAttribute("userId");
         String fileName = fileStorageService.storeFile(avatar, userId);
 
